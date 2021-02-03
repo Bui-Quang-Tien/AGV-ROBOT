@@ -1,0 +1,6 @@
+{
+    "sketch": "MCR_PID.ino",
+    "port": "COM12",
+    "board": "arduino:avr:mega",
+    "configuration": "cpu=atmega2560"
+}
