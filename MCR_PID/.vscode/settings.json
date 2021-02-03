@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.tpp": "cpp"
+    },
+    "C_Cpp.dimInactiveRegions": false,
+    "C_Cpp.errorSquiggles": "Disabled"
+}
