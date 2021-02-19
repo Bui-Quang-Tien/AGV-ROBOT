@@ -3,7 +3,7 @@
 volatile unsigned int sensor;
 unsigned int sensorValue[10];
 unsigned int sensorMin[10] = {350, 420, 515, 380, 345, 505, 490, 520, 500, 490};
-unsigned int sensorMax[10] = {600, 650, 735, 630, 600, 730, 710, 730, 730, 690};
+unsigned int sensorMax[10] = {525, 580, 679, 558, 534, 680, 666, 673, 658, 659};
 unsigned int RsensorMin[10] = {0, 0, 0, 280, 335, 276, 270, 0, 0, 0};
 unsigned int RsensorMax[10] = {1000, 1000, 1000, 680, 700, 640, 500, 1000, 1000, 1000};
 volatile int iSensorBefore;
