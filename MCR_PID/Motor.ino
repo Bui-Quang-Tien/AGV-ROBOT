@@ -228,7 +228,7 @@ int turn180(int tocdo)
       }
       break;
     case 4:
-      speed_run(0, 0);
+      runforwardline(0);
       if (cnt0 > 400)
       {
         Serial2.println("!UPT;1;CND:" + (String)RFIDpos + (String)NPS + (String)DIREC + "#");
@@ -244,14 +244,14 @@ int turn180(int tocdo)
 }
 int turnLeft(int tocdo)
 {
-  cnt1 = 0;
+  cnt0 = 0;
   int statusLeft = 0;
-  Serial2.println("!UPT;1;SPE:0#");
-  Serial2.println("!UPT;1;STA:0#");
+  //  Serial2.println("!UPT;1;SPE:0#");
+  //  Serial2.println("!UPT;1;STA:0#");
   while (1)
   {
     wdt_reset();
-    serial2Process();
+    //   serial2Process();
     // serial3Process();
     switch (statusLeft)
     {
@@ -276,25 +276,28 @@ int turnLeft(int tocdo)
         statusLeft = 2;
       break;
     case 2:
-      speed_run(-(tocdo - (cnt0 / 15)), (tocdo - (cnt0 / 15)));
+      if ((tocdo - (cnt0 / 15)) > 0)
+        speed_run(-(tocdo - (cnt0 / 15)), (tocdo - (cnt0 / 15)));
+      else
+        speed_run((tocdo - (cnt0 / 15)), -(tocdo - (cnt0 / 15)));
       if (sensor_inp(0b00011000) != 0)
       {
         // isRunning = 1;
-        Serial2.println("!UPT;1;CND:" + (String)RFIDpos + (String)NPS + (String)DIREC + "#");
-        Serial2.println("!UPT;1;SPE:0#");
-        Serial2.println("!UPT;1;STA:0#");
+        //    Serial2.println("!UPT;1;CND:" + (String)RFIDpos + (String)NPS + (String)DIREC + "#");
+        //    Serial2.println("!UPT;1;SPE:0#");
+        //    Serial2.println("!UPT;1;STA:0#");
         cnt0 = 0;
         statusLeft = 3;
         // return 11;
       }
       break;
     case 3:
-      speed_run(0, 0);
+      runforwardline(0);
       if (cnt0 > 400)
       {
-        Serial2.println("!UPT;1;CND:" + (String)RFIDpos + (String)NPS + (String)DIREC + "#");
-        Serial2.println("!UPT;1;SPE:400#");
-        Serial2.println("!UPT;1;STA:1#");
+        //    Serial2.println("!UPT;1;CND:" + (String)RFIDpos + (String)NPS + (String)DIREC + "#");
+        //    Serial2.println("!UPT;1;SPE:400#");
+        //    Serial2.println("!UPT;1;STA:1#");
         return 11;
       }
       break;
@@ -305,14 +308,14 @@ int turnLeft(int tocdo)
 }
 int turnRight(int tocdo)
 {
-  cnt1 = 0;
+  cnt0 = 0;
   int statusRight = 0;
-  Serial2.println("!UPT;1;SPE:0#");
-  Serial2.println("!UPT;1;STA:0#");
+//  Serial2.println("!UPT;1;SPE:0#");
+//  Serial2.println("!UPT;1;STA:0#");
   while (1)
   {
     wdt_reset();
-    serial2Process();
+   // serial2Process();
     // serial3Process();
     switch (statusRight)
     {
@@ -337,24 +340,27 @@ int turnRight(int tocdo)
         statusRight = 2;
       break;
     case 2:
+    if((tocdo - (cnt0 / 15))>0)
       speed_run((tocdo - (cnt0 / 15)), -(tocdo - (cnt0 / 15)));
+      else speed_run(-(tocdo - (cnt0 / 15)), (tocdo - (cnt0 / 15)));
       if (sensor_inp(0b00011000) != 0)
       {
         //isRunning = 1;
-        Serial2.println("!UPT;1;CND:" + (String)RFIDpos + (String)NPS + (String)DIREC + "#");
-        Serial2.println("!UPT;1;SPE:0#");
-        Serial2.println("!UPT;1;STA:0#");
+        // Serial2.println("!UPT;1;CND:" + (String)RFIDpos + (String)NPS + (String)DIREC + "#");
+        // Serial2.println("!UPT;1;SPE:0#");
+        // Serial2.println("!UPT;1;STA:0#");
         cnt0 = 0;
         statusRight = 3;
         //return 11;
       }
       break;
     case 3:
-      speed_run(0, 0);
-      if (cnt0 > 400){
-        Serial2.println("!UPT;1;CND:" + (String)RFIDpos + (String)NPS + (String)DIREC + "#");
-        Serial2.println("!UPT;1;SPE:400#");
-        Serial2.println("!UPT;1;STA:1#");
+      runforwardline(0);
+      if (cnt0 > 400)
+      {
+        // Serial2.println("!UPT;1;CND:" + (String)RFIDpos + (String)NPS + (String)DIREC + "#");
+        // Serial2.println("!UPT;1;SPE:400#");
+        // Serial2.println("!UPT;1;STA:1#");
         return 11;
       }
       break;
@@ -367,12 +373,18 @@ int goSlow(int _speed, int _distance)
 {
   int statusSlow = 0;
   cnt0 = 0;
-  distance = 0;
+  //distance = 0;
+  _distance += distance;
+  if (_distance == 0)
+  {
+    speed_run(0, 0);
+    return 1;
+  }
   while (1)
   {
     wdt_reset();
-    serial2Process();
-    serial3Process();
+ //   serial2Process();
+ //   serial3Process();
     switch (statusSlow)
     {
     case 0:
@@ -388,7 +400,50 @@ int goSlow(int _speed, int _distance)
         cnt0 = 0;
         return 1;
       }
-      if (cnt0 > 400)
+      if (cnt0 > 1000)
+      {
+        cnt0 = 0;
+        return 1;
+      }
+      break;
+
+    default:
+      break;
+    }
+  }
+}
+int goBackSlow(int _speed, int _distance)
+{
+  int statusSlow = 0;
+  cnt0 = 0;
+ // distance = 0;
+ _distance += distance;
+  if (_distance == 0)
+  {
+    speed_run(0, 0);
+    return 1;
+  }
+  while (1)
+  {
+    wdt_reset();
+ //   serial2Process();
+ //   serial3Process();
+    switch (statusSlow)
+    {
+    case 0:
+      if (_distance < distance)
+      {
+        _distance = distance;
+      }
+      //  speed_run(map((_distance - distance), 0, _distance, 0, _speed), map((_distance - distance), 0, _distance, 00, _speed));
+      runBackwardLine(-(map((_distance - distance), 0, _distance, 0, _speed)));
+      //  speed_run(_speed - (cnt0 / 2), _speed - (cnt0 / 2));
+      if (map((_distance - distance), 0, _distance, 0, _speed) <= 5)
+      {
+        cnt0 = 0;
+        return 1;
+      }
+      if (cnt0 > 10000)
       {
         cnt0 = 0;
         return 1;
